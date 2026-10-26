@@ -1,0 +1,8 @@
+// Dear-Ded 自有层（最高优先级）
+// apps: 自有/覆写规则。同 app 同名 group 整体替换上游；新 group 追加；新 app 直接加入。
+// disable: 点名禁用上游规则组，条目 {appId, groupName}，合并时置 enable:false。
+// 规则依据快照编写（snapshotUrls），来源标注在 desc 中。
+{
+  apps: [],
+  disable: [],
+}
