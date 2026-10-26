@@ -1,0 +1,58 @@
+name: 误触反馈（点错了地方）
+description: 规则点到了不该点的位置、影响正常使用时，用这个模板提交
+title: "【误触】应用名 - 场景"
+labels: ["误触"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。误触修复通常是收紧匹配条件或禁用对应规则组，需要知道**点错了什么、本来不应该点**。带 * 的项请尽量填全，附上快照链接能大幅加快定位。
+  - type: input
+    id: app_name
+    attributes:
+      label: 应用名称 *
+      placeholder: 例：微信
+    validations:
+      required: true
+  - type: input
+    id: app_package
+    attributes:
+      label: 应用包名
+      description: 可在 GKD 的「应用」页或快照页面看到，例：com.tencent.mm
+      placeholder: 例：com.tencent.mm
+    validations:
+      required: false
+  - type: textarea
+    id: detail
+    attributes:
+      label: 误触情况 *
+      description: 在什么操作下、规则点到了什么位置、造成了什么后果（如跳转到广告页、关掉了正常弹窗）
+      placeholder: 例：打开朋友圈时被自动点进了广告卡片，而不是停留在信息流
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: 出现频率 *
+      options:
+        - 每次都会
+        - 经常出现
+        - 偶尔出现
+    validations:
+      required: true
+  - type: input
+    id: snapshot
+    attributes:
+      label: GKD 快照链接
+      description: 在 GKD 里保存误触界面的快照并分享，得到 i.gkd.li 链接；没有快照也可以先提交文字描述
+      placeholder: 例：https://i.gkd.li/i/xxxxxxxx
+    validations:
+      required: false
+  - type: input
+    id: versions
+    attributes:
+      label: 版本信息
+      description: 该应用的版本号与本订阅版本号（GKD「订阅」页可见），例：应用 8.0.62 / 订阅 v1
+      placeholder: 例：应用 8.0.62 / 订阅 v1
+    validations:
+      required: false

@@ -1,0 +1,61 @@
+name: 漏跳反馈（广告没跳过）
+description: 某个广告没有被自动跳过时，用这个模板提交
+title: "【漏跳】应用名 - 场景"
+labels: ["漏跳"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。带 * 的项请尽量填全，尤其是**快照链接**——有快照，规则能照着界面节点精确编写，修复最快；没有快照的反馈往往只能靠猜。
+  - type: input
+    id: app_name
+    attributes:
+      label: 应用名称 *
+      placeholder: 例：知乎
+    validations:
+      required: true
+  - type: input
+    id: app_package
+    attributes:
+      label: 应用包名
+      description: 可在 GKD 的「应用」页或快照页面看到，例：com.zhihu.android
+      placeholder: 例：com.zhihu.android
+    validations:
+      required: false
+  - type: dropdown
+    id: scene
+    attributes:
+      label: 广告场景 *
+      options:
+        - 开屏广告
+        - 全屏弹窗广告
+        - 局部/信息流广告
+        - 青少年模式弹窗
+        - 更新/评价/权限等提示弹窗
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 具体情况 *
+      description: 什么时候出现、出现了什么、期望它做什么
+      placeholder: 例：冷启动时出现开屏广告，倒计时 5 秒，需要手动点「跳过」
+    validations:
+      required: true
+  - type: input
+    id: snapshot
+    attributes:
+      label: GKD 快照链接 *
+      description: 在 GKD 里对出问题界面保存快照并分享，得到 i.gkd.li 链接
+      placeholder: 例：https://i.gkd.li/i/xxxxxxxx
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: 版本信息
+      description: 该应用的版本号与本订阅版本号（GKD「订阅」页可见），例：应用 10.2.0 / 订阅 v1
+      placeholder: 例：应用 10.2.0 / 订阅 v1
+    validations:
+      required: false

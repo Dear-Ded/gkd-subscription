@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: GKD 官网
+    url: https://gkd.li
+    about: GKD 本体的下载与使用文档（规则使用问题请先看这里）
+  - name: GKD 项目仓库
+    url: https://github.com/gkd-kit/gkd
+    about: GKD 本体的问题与建议请提交到上游仓库
