@@ -1,14 +1,14 @@
 <div align="center">
 
-<img src="assets/banner.jpg" alt="Dear-Ded 精选 GKD 订阅" width="100%">
+<img src="assets/banner.jpg" alt="清净 · GKD 精选订阅" width="100%">
 
 <img src="assets/logo.svg" alt="Logo" width="84">
 
-<h1>Dear-Ded 精选 GKD 订阅</h1>
+<h1>清净 · GKD 精选订阅</h1>
 
 <p><strong>集百家之所长 · 每日自动合并维护的 GKD 规则订阅</strong></p>
 
-<p>精选底座打底，每日增量补齐，反馈逐条精修——一份订阅，装上就用。</p>
+<p>还你一个清净屏幕。精选底座打底，每日增量补齐，反馈逐条精修——一份订阅，装上就用。</p>
 
 [![订阅版本](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FDear-Ded%2Fgkd-subscription%2Fmain%2Fdist%2Fgkd.version.json5&query=%24.version&label=%E8%AE%A2%E9%98%85%E7%89%88%E6%9C%AC&color=blue)](https://github.com/Dear-Ded/gkd-subscription)
 [![覆盖应用](https://img.shields.io/badge/%E8%A6%86%E7%9B%96%E5%BA%94%E7%94%A8-988-0e5f63)](https://github.com/Dear-Ded/gkd-subscription)

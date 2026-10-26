@@ -14,7 +14,7 @@ import json5
 
 ROOT = Path(__file__).resolve().parent
 SUB_ID = 2026
-SUB_NAME = 'Dear-Ded 精选订阅'
+SUB_NAME = '清净 · GKD 精选订阅'
 AUTHOR = 'Dear-Ded'
 RAW_BASE = 'https://raw.githubusercontent.com/Dear-Ded/gkd-subscription/main/dist'
 UPDATE_URL = f'{RAW_BASE}/gkd.json5'
