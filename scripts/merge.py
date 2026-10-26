@@ -1,13 +1,36 @@
 #!/usr/bin/env python3
-"""Dear-Ded 精选 GKD 订阅合并脚本。
+"""清净 · GKD 精选订阅合并脚本（多源版）。
 
-三层合并：
-  底座 AIsouler 最终版（精选，已停更） > 增量 Lin-arm（每日更新） > 自有层 custom.json5（最高优先级）
-合并粒度为 app / group：同 app 同名 group 以高优先级层为准；低层独有的 app、group 补入并重排 key。
+合并优先级（高 → 低）：自有层 custom.json5 > 底座 > 各增量源（按 SOURCES 顺序）。
+合并粒度为 app / group：同 app 同名 group 以高优先级层为准；低层独有的 app、group
+补入并重排 key；globalGroups 同名只保留高层一份。categories 取底座的。
 自有层：同名 group 整体替换；disable 列表可将任意 group 置 enable:false。
-内容哈希未变化时不升版本。
+内容哈希未变化时不升版本（--bump 时内容变化才 version+1）。
+
+来源清单（SOURCES，顺序即优先级，底座在最前）：
+  aisouler     AIsouler 最终版 v406，精选底座（已停更）
+               https://github.com/AIsouler/GKD_subscription
+  linarm       Lin-arm，每日更新的主增量
+               https://github.com/Lin-arm/GKD_subscription
+  aoguai       奥怪的GKD订阅（id 86，仍在维护，全局规则见长）
+               https://github.com/aoguai/subscription
+  ganlinte     甘霖的GKD订阅（id 233，仍在维护，覆盖面最大）
+               https://github.com/ganlinte/GKD-subscription
+  mengnian     梦念逍遥のGKD订阅（id 1，仍在维护）
+               https://github.com/MengNianxiaoyao/gkd-subscription
+  mrlc         Mrlc的GKD订阅（id 2，仍在维护）
+               https://github.com/mrlctate/gkd-mrlc
+  adpro        AdproのGKD订阅（id 825，2025-02 停更，精选存量大）
+               https://github.com/Adpro-Team/GKD_subscription
+  jiuqianyuan  九千院的GKD订阅（id 717，2025-07 停更，覆盖面广）
+               https://github.com/jiuqianyuan/GKD_subscription
+  akun777      少年阿鲲的GKD订阅（id 777，Lin-arm/gkd-Rules 发布，少数应用深度规则）
+               https://github.com/Lin-arm/gkd-Rules
+  muqi         言木七的附加订阅（id 808，附加型订阅，仍在维护）
+               https://github.com/yanmuq/muqi_gkd
+每个来源的 url 为其 dist 文件直链，便于日后刷新 sources/ 快照。
 """
-import argparse, copy, hashlib, json, sys
+import argparse, copy, hashlib, json
 from pathlib import Path
 
 import json5
@@ -21,6 +44,40 @@ UPDATE_URL = f'{RAW_BASE}/gkd.json5'
 CHECK_URL = f'{RAW_BASE}/gkd.version.json5'
 SUPPORT_URI = 'https://github.com/Dear-Ded/gkd-subscription'
 
+# 顺序即优先级：第一个为底座（提供 categories），其余为增量源，依次并入。
+SOURCES = [
+    {'key': 'aisouler', 'file': 'aisouler-gkd.json5',
+     'repo': 'https://github.com/AIsouler/GKD_subscription',
+     'url': 'https://raw.githubusercontent.com/AIsouler/GKD_subscription/main/dist/AIsouler_gkd.json5'},
+    {'key': 'linarm', 'file': 'lin-arm-gkd.json5',
+     'repo': 'https://github.com/Lin-arm/GKD_subscription',
+     'url': 'https://raw.githubusercontent.com/Lin-arm/GKD_subscription/main/dist/gkd.json5'},
+    {'key': 'aoguai', 'file': 'sources/aoguai-gkd.json5',
+     'repo': 'https://github.com/aoguai/subscription',
+     'url': 'https://raw.githubusercontent.com/aoguai/subscription/custom/dist/aoguai_gkd.json5'},
+    {'key': 'ganlinte', 'file': 'sources/ganlinte-gkd.json5',
+     'repo': 'https://github.com/ganlinte/GKD-subscription',
+     'url': 'https://raw.githubusercontent.com/ganlinte/GKD-subscription/main/dist/ganlin_gkd.json5'},
+    {'key': 'mengnian', 'file': 'sources/mengnian-gkd.json5',
+     'repo': 'https://github.com/MengNianxiaoyao/gkd-subscription',
+     'url': 'https://raw.githubusercontent.com/MengNianxiaoyao/gkd-subscription/main/dist/gkd.json5'},
+    {'key': 'mrlc', 'file': 'sources/mrlc-gkd.json5',
+     'repo': 'https://github.com/mrlctate/gkd-mrlc',
+     'url': 'https://raw.githubusercontent.com/mrlctate/gkd-mrlc/main/dist/gkd.json5'},
+    {'key': 'adpro', 'file': 'sources/adpro-gkd.json5',
+     'repo': 'https://github.com/Adpro-Team/GKD_subscription',
+     'url': 'https://raw.githubusercontent.com/Adpro-Team/GKD_subscription/main/dist/Adpro_gkd.json5'},
+    {'key': 'jiuqianyuan', 'file': 'sources/jiuqianyuan-gkd.json5',
+     'repo': 'https://github.com/jiuqianyuan/GKD_subscription',
+     'url': 'https://raw.githubusercontent.com/jiuqianyuan/GKD_subscription/main/dist/gkd.json5'},
+    {'key': 'akun777', 'file': 'sources/linarm-rules-gkd.json5',
+     'repo': 'https://github.com/Lin-arm/gkd-Rules',
+     'url': 'https://raw.githubusercontent.com/Lin-arm/gkd-Rules/main/dist/gkd.json5'},
+    {'key': 'muqi', 'file': 'sources/muqi-gkd.json5',
+     'repo': 'https://github.com/yanmuq/muqi_gkd',
+     'url': 'https://raw.githubusercontent.com/yanmuq/muqi_gkd/main/dist/gkd.json5'},
+]
+
 
 def load_json5(path):
     with open(path, encoding='utf-8') as f:
@@ -32,44 +89,45 @@ def next_key(groups):
     return (max(keys) + 1) if keys else 0
 
 
-def merge_apps(base_apps, incr_apps, stats):
-    merged = {}
-    order = []
-    for app in base_apps:
-        merged[app['id']] = copy.deepcopy(app)
-        order.append(app['id'])
-    for app in incr_apps:
+def merge_layer(merged, order, src_apps, st):
+    """把一个来源的 apps 并入已合并集合（merged: id->app, order: id 顺序）。
+
+    新 app 整体补入；已有 app 中同名 group 以先到（高优先级）层为准，
+    独有 group 追加并重排 key。
+    """
+    for app in src_apps:
         aid = app['id']
         if aid not in merged:
             merged[aid] = copy.deepcopy(app)
             order.append(aid)
-            stats['apps_from_incr'] += 1
+            st['apps_added'] += 1
             continue
         target = merged[aid]
-        names = {g.get('name') for g in target.get('groups', [])}
+        target.setdefault('groups', [])
+        names = {g.get('name') for g in target['groups']}
         for g in app.get('groups', []):
             if g.get('name') in names:
-                stats['groups_base_kept'] += 1
+                st['groups_shadowed'] += 1
                 continue
             g2 = copy.deepcopy(g)
             g2['key'] = next_key(target['groups'])
             target['groups'].append(g2)
             names.add(g2.get('name'))
-            stats['groups_from_incr'] += 1
-    return [merged[aid] for aid in order]
+            st['groups_added'] += 1
+    return merged, order
 
 
-def merge_global(base_g, incr_g, stats):
-    out = copy.deepcopy(base_g)
+def merge_global_layer(out, src_globals, st):
     names = {g.get('name') for g in out}
-    for g in incr_g:
+    for g in src_globals:
         if g.get('name') in names:
+            st['globals_shadowed'] += 1
             continue
         g2 = copy.deepcopy(g)
         g2['key'] = next_key(out)
         out.append(g2)
         names.add(g2.get('name'))
-        stats['global_from_incr'] += 1
+        st['globals_added'] += 1
     return out
 
 
@@ -124,22 +182,46 @@ def main():
     ap.add_argument('--bump', action='store_true', help='内容变化时版本 +1')
     args = ap.parse_args()
 
-    base = load_json5(ROOT / 'aisouler-gkd.json5')
-    incr = load_json5(ROOT / 'lin-arm-gkd.json5')
+    loaded = []  # (source_config, parsed_subscription)
+    for src in SOURCES:
+        path = ROOT / src['file']
+        if not path.exists():
+            raise SystemExit(f"source file missing: {src['file']} (key={src['key']})")
+        loaded.append((src, load_json5(path)))
+
     custom_path = ROOT / 'custom.json5'
     custom = load_json5(custom_path) if custom_path.exists() else {'apps': [], 'disable': []}
     state_path = ROOT / 'state.json'
     state = json.loads(state_path.read_text(encoding='utf-8')) if state_path.exists() else {'version': 0, 'hash': ''}
 
-    stats = {'apps_from_incr': 0, 'groups_from_incr': 0, 'groups_base_kept': 0,
-             'global_from_incr': 0, 'apps_from_custom': 0, 'groups_from_custom': 0,
-             'groups_custom_replaced': 0, 'groups_disabled': 0}
+    per_source = {}
+    merged = {}
+    order = []
+    global_groups = []
+    categories = []
+    for i, (src, data) in enumerate(loaded):
+        st = {'apps_added': 0, 'groups_added': 0, 'groups_shadowed': 0,
+              'globals_added': 0, 'globals_shadowed': 0,
+              'src_version': data.get('version')}
+        if i == 0:  # 底座：初始化集合、categories、globalGroups
+            for app in data.get('apps', []):
+                if app['id'] not in merged:
+                    merged[app['id']] = copy.deepcopy(app)
+                    order.append(app['id'])
+                    st['apps_added'] += 1
+            global_groups = copy.deepcopy(data.get('globalGroups', []))
+            st['globals_added'] = len(global_groups)
+            categories = copy.deepcopy(data.get('categories', []))
+        else:
+            merged, order = merge_layer(merged, order, data.get('apps', []), st)
+            global_groups = merge_global_layer(global_groups, data.get('globalGroups', []), st)
+        per_source[src['key']] = st
 
-    apps = merge_apps(base.get('apps', []), incr.get('apps', []), stats)
-    apps = apply_custom(apps, custom, stats)
+    apps = [merged[aid] for aid in order]
+    custom_stats = {'apps_from_custom': 0, 'groups_from_custom': 0,
+                    'groups_custom_replaced': 0, 'groups_disabled': 0}
+    apps = apply_custom(apps, custom, custom_stats)
     apps.sort(key=lambda a: a['id'])
-    global_groups = merge_global(base.get('globalGroups', []), incr.get('globalGroups', []), stats)
-    categories = copy.deepcopy(base.get('categories', []))
 
     payload = {'categories': categories, 'globalGroups': global_groups, 'apps': apps}
     digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode('utf-8')).hexdigest()
@@ -175,13 +257,19 @@ def main():
     for a in chk['apps']:
         ks = [g.get('key') for g in a.get('groups', [])]
         assert len(ks) == len(set(ks)), f'group key dup in {a["id"]}'
+    gks = [g.get('key') for g in chk.get('globalGroups', [])]
+    assert len(gks) == len(set(gks)), 'global group key dup!'
     n_groups, n_rules = count_rules(chk['apps'])
     state.update({'version': version, 'hash': digest,
-                  'baseVersion': base.get('version'), 'incrVersion': incr.get('version')})
+                  'baseVersion': loaded[0][1].get('version'),
+                  'incrVersion': loaded[1][1].get('version'),
+                  'sources': {src['key']: data.get('version') for src, data in loaded}})
     state_path.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding='utf-8')
     print(json.dumps({'version': version, 'changed': changed, 'apps': len(ids),
                       'groups': n_groups, 'rules': n_rules,
-                      'bytes': len(out_text.encode('utf-8')), 'stats': stats},
+                      'globalGroups': len(chk.get('globalGroups', [])),
+                      'bytes': len(out_text.encode('utf-8')),
+                      'per_source': per_source, 'custom': custom_stats},
                      ensure_ascii=False, indent=1))
 
 
