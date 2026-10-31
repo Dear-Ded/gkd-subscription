@@ -2,6 +2,35 @@
 
 本订阅的显著变更记录在此。版本号与订阅文件 `dist/gkd.json5` 内的 `version` 字段一致：由每日自动合并任务在内容发生变化时递增，无变化不升版。
 
+## [10] - 2026-10-31
+
+### 内容
+
+对照 v9（1094 应用 / 4909 规则组 / 7658 规则 / 15 全局组），本版为 1104 应用 / 4990 规则组 / 7759 规则 / 16 全局组，订阅文件约 2.8 MB。原有十个来源的合并结果与 v9 一致，增量全部来自下面五个新上游和一条自有全局规则。新上游优先级最低：同名组仍以底座和原有增量源为准，不会改写已有规则。
+
+误触守卫会丢掉：选择器已被更高层完整覆盖的组、支付 / 登录 / 删除 / 签到领取 / 打开通知、信息流滑动与 `action=back`、过宽的开屏「跳过」、以及没有选择器的空组。非开屏分类默认仍是关闭的。
+
+| 新增上游 | 版本 | 实际并入 |
+| --- | --- | --- |
+| [AIsouler 自用续订](https://github.com/AIsouler/gkd-subscription) | v121（2026-10-31） | 4 个应用、36 个规则组、45 条规则。新应用：唱吧、湖南农信、红果短剧（海外包）、公交 e 出行 |
+| [火山虾](https://github.com/VolcanoSAhrimp/gkd-rule) | v75（2026-10-15） | 4 个应用、30 个规则组、39 条规则。新应用：猫耳 FM、MOMO 陌陌、电影猎手、莉景天气。补了一批青少年模式、更新提示和弹窗 |
+| [GK-Lemon-D](https://github.com/LenorEric/GK-Lemon-D) | v45（2026-10-30） | 0 个应用、9 个规则组、9 条规则。补哔哩哔哩暂停广告、淘宝/闲鱼弹窗和若干通知权限关闭 |
+| [YaChengMu 精简续更](https://github.com/YaChengMu/gkd_subscription_min) | v152（2026-10-27） | 2 个应用、3 个规则组、5 条规则。新应用：华为教育中心、WiFi 万能钥匙极速版 |
+| [Ling](https://github.com/cjy0812/Ling033_GKD_Rules) | v15（2026-10-06） | 0 个应用、3 个规则组、3 条规则。美团外卖开屏与拼好饭弹窗、设置里的电子保修卡。抖音信息流滑动规则未并入 |
+| 自有层 | — | 1 个全局组「弹窗广告-广告关闭按钮」：只点可见的 `vid=ad_close`，每个应用最多 1 次 |
+
+### 未接入的候选
+
+- 官方名单 [GKD_THS_List](https://github.com/Adpro-Team/GKD_THS_List) 里标为仍在维护的奥怪、甘霖、梦念逍遥、Mrlc 已在原有十源中。名单本身未再收录新的活跃订阅。
+- 停更或归档：`gkd-kit/subscription`（2024-04 归档）、`CKylinMC/gkd-rule-extras`（2026-06，且含无长度限制的「跳过」）、`Tsuk1ko/gkd-subscription`（最后提交 2026-09-19，超过一个月）、`lisrain/GKD_subscription`（已归档）。
+- 许可证或作者明确限制再分发：`BennettChina/gkd-subscription` 写明仅供本人使用。`yzl3014/gkd` 虽为 GPL-3.0，但是 AIsouler / 奥怪 / Lin-arm 的个人裁剪子集，作者写明不适合其他用户，独有组只有 3 个，没有接入。
+- 质量不够或与现有源重复：`he0524/gkd-subscription`、`anransu983-sketch/gkd-rules`（无 star，约一半是选择器重复，后者还有空应用）、`gmyboy/GKDmy`（Lin-arm 镜像，只多 2 条且含自动上滑）、`myloveisxiao/gkd-subscription`（全局「跳过」过宽）、`K-S-D-M`、`H-xiaoH`、`mfd2033`、`rensss`（规模过小且缺少快照）。`jsllb1986`、`oklazeno`、`Reev3sX`、`dlzbm`、`jack98hao` 是已有上游的二次聚合，接入只会重复。
+
+### 机制
+
+- `scripts/merge.py` 改为从仓库根目录读写 `dist/` 与 `custom.json5`，缺快照时按 `SOURCES.url` 拉取；`--fetch` 强制刷新。无 `state.json` 时从已发布的 `dist` 回读版本和内容哈希，避免误把版本打回 1。
+- 自有层新增 `globalGroups`，同名替换、新名追加。
+
 ## [9] - 2026-10-31
 
 ### 内容
