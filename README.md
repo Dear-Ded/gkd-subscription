@@ -11,7 +11,7 @@
 <p>还你一个清净屏幕。精选底座打底，每日增量补齐，反馈逐条精修——一份订阅，装上就用。</p>
 
 [![订阅版本](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FDear-Ded%2Fgkd-subscription%2Fmain%2Fdist%2Fgkd.version.json5&query=%24.version&label=%E8%AE%A2%E9%98%85%E7%89%88%E6%9C%AC&color=blue)](https://github.com/Dear-Ded/gkd-subscription)
-[![覆盖应用](https://img.shields.io/badge/%E8%A6%86%E7%9B%96%E5%BA%94%E7%94%A8-1085-0e5f63)](https://github.com/Dear-Ded/gkd-subscription)
+[![覆盖应用](https://img.shields.io/badge/%E8%A6%86%E7%9B%96%E5%BA%94%E7%94%A8-1094-0e5f63)](https://github.com/Dear-Ded/gkd-subscription)
 [![更新方式](https://img.shields.io/badge/%E6%9B%B4%E6%96%B0-%E6%AF%8F%E6%97%A5%E8%87%AA%E5%8A%A8-brightgreen)](CHANGELOG.md)
 [![最近更新](https://img.shields.io/github/last-commit/Dear-Ded/gkd-subscription)](https://github.com/Dear-Ded/gkd-subscription/commits/main)
 [![GKD 官网](https://img.shields.io/badge/GKD-gkd.li-orange)](https://gkd.li)
@@ -49,11 +49,11 @@ https://raw.githubusercontent.com/Dear-Ded/gkd-subscription/main/dist/gkd.json5
 
 ## 数据指标
 
-| 指标 | 当前数据（v3） |
+| 指标 | 当前数据（v9） |
 | --- | --- |
-| 覆盖应用 | 1085 个 |
-| 规则组 | 4879 个 |
-| 规则条数 | 7619 条 |
+| 覆盖应用 | 1094 个 |
+| 规则组 | 4909 个 |
+| 规则条数 | 7658 条 |
 | 订阅文件大小 | 约 2.8 MB |
 | 更新频率 | 每日自动合并发布 |
 
