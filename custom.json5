@@ -1,8 +1,27 @@
 // Dear-Ded 自有层（最高优先级）
 // apps: 自有/覆写规则。同 app 同名 group 整体替换上游；新 group 追加；新 app 直接加入。
 // disable: 点名禁用上游规则组，条目 {appId, groupName}，合并时置 enable:false。
+// globalGroups: 自有全局规则。同名替换上游；新名追加。只放收紧过的补充。
 // 规则依据快照编写（snapshotUrls），来源标注在 desc 中。
 {
   apps: [],
   disable: [],
+  globalGroups: [
+    {
+      key: 0,
+      name: '弹窗广告-广告关闭按钮',
+      desc: '自有补充：只点击可见且可点的 vid=ad_close，每个应用最多 1 次。奥怪保留的「开屏广告」全局组不含该选择器（梦念逍遥同名组被覆盖）。已加 visibleToUser 与 actionMaximum，避免无界连点。',
+      order: -7,
+      fastQuery: true,
+      matchTime: 10000,
+      actionMaximum: 1,
+      resetMatch: 'app',
+      rules: [
+        {
+          key: 0,
+          matches: '[vid="ad_close"][clickable=true][visibleToUser=true]',
+        },
+      ],
+    },
+  ],
 }

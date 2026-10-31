@@ -1,0 +1,5 @@
+# 合并时按 SOURCES.url 拉取的上游快照与本地版本状态，不入库
+/sources/
+/state.json
+__pycache__/
+*.pyc
