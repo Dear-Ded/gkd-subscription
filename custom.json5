@@ -3,8 +3,116 @@
 // disable: 点名禁用上游规则组，条目 {appId, groupName}，合并时置 enable:false。
 // globalGroups: 自有全局规则。同名替换上游；新名追加。只放收紧过的补充。
 // 规则依据快照编写（snapshotUrls），来源标注在 desc 中。
+// 开屏组名会触发全局规则 disableIfAppGroupMatch。覆写时若仍要保留全局开屏，必须带 ignoreGlobalGroupMatch:true。
 {
-  apps: [],
+  apps: [
+    {
+      id: 'com.ximalaya.ting.android',
+      name: '喜马拉雅',
+      groups: [
+        {
+          key: 0,
+          name: '开屏广告',
+          desc: '自有覆写。上游这条「开屏广告」只点 text*=跳过，实际点到不可点击的倒计时文案（vid=xm_ad_host_count_down_text，「跳过广告」），真正热区是旁边的 vid=xm_ad_host_count_down_click_lay；同名组还会让三条全局开屏因 disableIfAppGroupMatch 全部停用。本层改为点可点击热区，不点摇一摇，并 ignoreGlobalGroupMatch 让全局开屏继续处理第三方 SDK。依据 AIsouler/GKD_subscription#1252 的 MainActivity 快照（9.4.7.3）。',
+          enable: true,
+          ignoreGlobalGroupMatch: true,
+          matchTime: 10000,
+          actionMaximum: 2,
+          resetMatch: 'app',
+          priorityTime: 10000,
+          forcedTime: 10000,
+          actionCd: 800,
+          actionCdKey: 0,
+          order: -10,
+          rules: [
+            {
+              key: 0,
+              name: '自定义跳过热区',
+              fastQuery: true,
+              activityIds: [
+                '.host.activity.MainActivity',
+                '.host.activity.WelComeActivity',
+              ],
+              matches:
+                '[vid="xm_ad_host_count_down_click_lay"][clickable=true][visibleToUser=true]',
+            },
+            {
+              key: 1,
+              name: '开屏容器内可点的跳过',
+              desc: '热区改名时的兜底。排除名为 no_click 的重叠层和摇一摇热区，避免点开广告。',
+              fastQuery: false,
+              activityIds: [
+                '.host.activity.MainActivity',
+                '.host.activity.WelComeActivity',
+              ],
+              matches:
+                '[vid="host_splash_skip_layout"] > [clickable=true][visibleToUser=true][width<500&&height<300][(text^="跳过"||desc^="跳过"||text*="跳 过")][vid!="xm_ad_host_count_down_click_lay_no_click_view"][vid!="xm_ad_host_shake_click_view"]',
+            },
+            {
+              key: 2,
+              name: '穿山甲开屏跳过',
+              desc: '全屏视频或 SDK 开屏上的 tt_splash_skip_btn。不限定 Activity，该 id 只出现在开屏。',
+              fastQuery: true,
+              matches: '[vid="tt_splash_skip_btn"][visibleToUser=true]',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'com.ximalaya.ting.lite',
+      name: '喜马拉雅极速版',
+      groups: [
+        {
+          key: 0,
+          name: '开屏广告',
+          desc: '自有补充。极速版原先没有应用内开屏组，全局开屏仍生效（ignoreGlobalGroupMatch）。补上与主版相同的自定义跳过热区，资源名一致时即可跳过；摇一摇热区不点。',
+          enable: true,
+          ignoreGlobalGroupMatch: true,
+          matchTime: 10000,
+          actionMaximum: 2,
+          resetMatch: 'app',
+          priorityTime: 10000,
+          forcedTime: 10000,
+          actionCd: 800,
+          actionCdKey: 0,
+          order: -10,
+          rules: [
+            {
+              key: 0,
+              name: '自定义跳过热区',
+              fastQuery: true,
+              activityIds: [
+                '.host.activity.MainActivity',
+                '.host.activity.WelComeActivity',
+              ],
+              matches:
+                '[vid="xm_ad_host_count_down_click_lay"][clickable=true][visibleToUser=true]',
+            },
+            {
+              key: 1,
+              name: '开屏容器内可点的跳过',
+              desc: '热区改名时的兜底。排除名为 no_click 的重叠层和摇一摇热区，避免点开广告。',
+              fastQuery: false,
+              activityIds: [
+                '.host.activity.MainActivity',
+                '.host.activity.WelComeActivity',
+              ],
+              matches:
+                '[vid="host_splash_skip_layout"] > [clickable=true][visibleToUser=true][width<500&&height<300][(text^="跳过"||desc^="跳过"||text*="跳 过")][vid!="xm_ad_host_count_down_click_lay_no_click_view"][vid!="xm_ad_host_shake_click_view"]',
+            },
+            {
+              key: 2,
+              name: '穿山甲开屏跳过',
+              desc: '全屏视频或 SDK 开屏上的 tt_splash_skip_btn。不限定 Activity，该 id 只出现在开屏。',
+              fastQuery: true,
+              matches: '[vid="tt_splash_skip_btn"][visibleToUser=true]',
+            },
+          ],
+        },
+      ],
+    },
+  ],
   disable: [],
   globalGroups: [
     {
