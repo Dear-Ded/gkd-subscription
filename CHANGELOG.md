@@ -2,6 +2,19 @@
 
 本订阅的显著变更记录在此。版本号与订阅文件 `dist/gkd.json5` 内的 `version` 字段一致：由每日自动合并任务在内容发生变化时递增，无变化不升版。
 
+## [12] - 2026-11-02
+
+### 内容
+
+对照 v11（1105 应用 / 4993 规则组 / 7761 规则 / 16 全局组），本版为 1105 应用 / 4994 规则组 / 7766 规则 / 16 全局组，订阅文件约 2.8 MB（2,805,180 字节）。十五个上游版本与 v11 相同，变更只在自有层。
+
+喜马拉雅（`com.ximalaya.ting.android`）开屏不跳过：梦念逍遥 / 九千院留下的应用组「开屏广告」只有一条 `[text*="跳过"][text.length<10][visibleToUser=true]`。AIsouler / Lin-arm 已在 2025-04-15 删掉这组、改走全局开屏，但合并时低层同名组被补了回来。三条全局开屏都写了 `disableIfAppGroupMatch: '开屏广告'`，于是主版的全局开屏全部停用。剩下的那条规则点的是不可点击的倒计时文案 `xm_ad_host_count_down_text`（文案「跳过广告」），真正的热区是同位置可点击的 `xm_ad_host_count_down_click_lay`。依据 [AIsouler/GKD_subscription#1252](https://github.com/AIsouler/GKD_subscription/issues/1252) 的 MainActivity 快照（9.4.7.3，开屏盖在首页上，同时有摇一摇）。没有更新的设备快照，穿山甲 `tt_splash_skip_btn` 与极速版是否同资源名按现有全局规则和主版结构补上。
+
+- 自有层覆写主版规则组「开屏广告」（key 25，`enable: true`）：点可点击热区，开屏容器内的兜底排除 `…_no_click_view` 和摇一摇热区，另补穿山甲跳过按钮。`ignoreGlobalGroupMatch: true`，全局开屏恢复生效。只在 `MainActivity` / `WelComeActivity` 上匹配自有热区，不改播放页、签到、通知等其它组
+- 极速版（`com.ximalaya.ting.lite`）原先没有「开屏广告」组，全局开屏本来就会跑。新增同名组，同样 `ignoreGlobalGroupMatch: true`，避免把全局开屏关掉
+
+净变化：应用数不变，规则组 +1，规则 +5。全局组仍为 16。局部广告、全屏广告、功能类默认仍关闭。
+
 ## [11] - 2026-11-01
 
 ### 内容
