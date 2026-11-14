@@ -53,7 +53,7 @@ https://raw.githubusercontent.com/Dear-Ded/gkd-subscription/main/dist/gkd.json5
 | --- | --- |
 | 覆盖应用 | 1110 个 |
 | 规则组 | 5095 个 |
-| 规则条数 | 7924 条 |
+| 规则条数 | 7922 条 |
 | 全局规则组 | 16 个 |
 | 订阅文件大小 | 约 2.8 MB |
 | 更新频率 | 每日自动合并发布 |
