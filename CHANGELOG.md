@@ -2,6 +2,38 @@
 
 本订阅的显著变更记录在此。版本号与订阅文件 `dist/gkd.json5` 内的 `version` 字段一致：由每日自动合并任务在内容发生变化时递增，无变化不升版。
 
+## [28] - 2026-11-23
+
+### 内容
+
+对照 v27（1116 应用 / 5117 规则组 / 7953 规则 / 16 全局组，2,877,103 字节），本版为 1117 应用 / 5119 规则组 / 7955 规则 / 16 全局组，订阅文件约 2.8 MB（2,878,068 字节）。例行合并，上游按各源已发布的 dist 拉取。未改自有层。局部广告、全屏广告、分段广告、功能类、通知提示、权限提示、评价提示默认仍是关闭的。开屏广告默认仍是开启的。本版没有新增默认开启的组。
+
+版本有变化的来源：
+
+- [Lin-arm](https://github.com/Lin-arm/GKD_subscription) v641 → v642（chore: v642，2026-11-22T23:42:08Z）。v641 之后、已打进 v642 dist 的提交：perf 系统升级(VIVO)、UU远程（2026-11-22T05:22:17Z）、feat 快对AI「局部广告-讲解视频浮窗」（2026-11-22T10:14:13Z，#491）、fix JavDB「通知提示-公告弹窗」（2026-11-22T10:24:35Z，#492）、feat 小米服务框架「权限提示-b站申请通知权限」（2026-11-22T12:51:56Z）。对照 v641 与 v642 的 dist，规则只动了这四个应用。JavDB 被底座同名组挡住；系统升级、UU远程、快对AI、小米服务框架进入合并结果。perf 提交说明里的「其他...」没有再改别的应用。
+- [GK-Lemon-D](https://github.com/LenorEric/GK-Lemon-D) v56 → v59（Match current Android accessibility settings layout，2026-11-22T09:47:59Z）。该源只补缺口、不并入全局组。父提交的 dist 仍是 version 56，这次 dist 为 version 59，规则只改了系统设置一组，被守卫丢掉，没有进入合并结果。
+
+其余十三个来源的版本与 v27 相同：AIsouler v406、奥怪 v89、甘霖 v72、梦念逍遥 v79、Mrlc v75、Adpro v90、九千院 v9、少年阿鲲 v129、言木七 v54、AIsouler 自用续订 v124、Ling v16、火山虾 v78、YaChengMu v155。少年阿鲲 2026-11-22T10:31:41Z 的「优化选择器库」没有改主 dist，文件与 v27 拉取时逐字节相同。Ling 在同一天有订阅 URL、依赖和文档提交，dist 里的 apps、globalGroups、categories 与 v27 拉取时相同，只有 author 从「Ling」改成了「⚠警告」，规则内容未变，没有新组进入。
+
+Lin-arm v642 实际并入：
+
+- 系统升级(VIVO)（`com.bbk.updater`）「通知提示-系统更新提示」改名为「更新提示」（仍为 1 条，序号仍是 1）。说明改为「按[返回键]」。选择器、动作和快照都没变：`fastQuery`，活动页 `com.bbk.launcher2.Launcher`，出现「下载并安装」时匹配旁边可点击、可见的「稍后提醒」，动作为返回（`action: back`）。快照 [26644663](https://i.gkd.li/i/26644663)，示例 [bdd7cc82](https://e.gkd.li/bdd7cc82-a138-4f0b-b865-0be3168a319e)。这个应用在各源里只有 Lin-arm 这一组，合并按当次 dist 重算，旧名不再有来源提供，订阅里只留下新名，新旧组不并存。组没有 `enable: false`。组名归到「更新提示」，该分类默认关闭，不会自动按返回键。v27 它归在「通知提示」，那个分类默认也是关闭的
+- UU远程（`com.netease.uuremote`）「通知提示-更新提示」改名为「更新提示」（仍为 1 条，序号仍是 2）。说明改为「点击[暂不更新]」。选择器、活动页、快照和示例都与 v27 相同：`matchTime: 20000`、`actionMaximum: 1`、`resetMatch: "app"`，规则上 `fastQuery`。活动页 `com.remote.app.ui.activity.ComposeMainActivity`，出现以「更新」结尾的文字时，点以「不更新」结尾的可点击 View。快照 [35130030](https://i.gkd.li/i/35130030)，示例 [427b504d](https://e.gkd.li/427b504d-30f3-4e18-b525-5be6a6787801)。这组 v27 由 Lin-arm 并入，更高层没有同名组。改名后源里不再提供旧名，订阅里只留下「更新提示」，新旧组不并存。原有「权限提示-通知提示」（序号 1）仍是 AIsouler 底座的版本，未改。组没有 `enable: false`，归到「更新提示」，该分类默认关闭，不会自动点击
+- 快对AI（`com.kuaiduizuoye.scan`）新增「局部广告-讲解视频浮窗」（1 条，序号 2）。说明是「x掉」。这个应用先由 Lin-arm 整份并入，Lin-arm 自带的序号会保留，所以新组用的就是上游的 key 2。活动页是拍搜页 `.activity.manyquestionsearch.activity.PicManySearchActivity`。点可见且宽小于 126 的 TextView；它前一个兄弟节点有 3 个子节点，其中是一个 TextView，后面紧跟文本长度大于 50、宽小于 143 且高大于 82 的 Image。快照 [35228963](https://i.gkd.li/i/35228963)，示例 [e37a46fe](https://e.gkd.li/e37a46fe-9464-405e-9a93-608a865a519f)。组没有 `enable: false`，局部广告默认关闭，不会自动点击。原先排在后面的三组只改了序号、选择器未改：甘霖的「全屏广告-首页广告弹窗」（写了 `enable: false`）由 2 改为 3，Adpro 的「未分类-首页广告弹窗」（写了 `enable: false`）由 3 改为 4，九千院的「开屏广告」（2 条，没有 `enable: false`）由 4 改为 5。开屏这组 v27 就在，开屏分类默认开启，不是本版新增的默认开启组。Lin-arm 原有的「分段广告」（序号 1）未改。快对AI 现为 5 组
+- 小米服务框架（`com.xiaomi.xmsf`）新增应用，1 组（1 条）「权限提示-b站申请通知权限」（序号 1）。说明是「(⚠️仅限哔哩哔哩app) 点击[拒绝]」。`matchTime: 10000`、`actionMaximum: 1`、`resetMatch: "app"`，规则上 `fastQuery`。活动页 `com.xiaomi.xms.subscribe_remind.dialog.SubscribeDialogActivity`，出现包含「哔哩哔哩」的文字、后面跟着包含「通知」的文字时，点可点击的「拒绝」。快照 [35232368](https://i.gkd.li/i/35232368)，示例 [d8b8754f](https://e.gkd.li/d8b8754f-d66f-483a-b424-75951d782623)。组没有 `enable: false`，权限提示默认关闭，不会自动点击
+
+被更高层同名组挡住、未进入合并结果：
+
+- JavDB（`xxx.pornhub.fuck`）「通知提示-公告弹窗」：Lin-arm 把活动页从 `.MainActivity` 扩成 `.MainActivity` 和 `.AppActivity`，选择器从 `@Button[desc="知道了"][visibleToUser=true] <3 View < View < View < View < FrameLayout < [id="android:id/content"]` 改为 `View[desc="公告"] +n @Button[desc="知道了"][clickable=true][visibleToUser=true] <<n [id="android:id/content"]`，快照在 [14559882](https://i.gkd.li/i/14559882) 之外加上 [35229398](https://i.gkd.li/i/35229398)，示例改为 [a3782695](https://e.gkd.li/a3782695-5b94-4588-9c82-24989d4e04bd)。AIsouler 底座有同名组，而且与 Lin-arm v641 这组完全一致（说明「点击[知道了]」，`fastQuery`、`matchTime: 10000`、`actionMaximum: 1`、`resetMatch: "app"`，活动页仍只有 `.MainActivity`，快照 [14559882](https://i.gkd.li/i/14559882)，示例 [ae1792dd](https://m.gkd.li/57941037/ae1792dd-210b-4ac2-bfce-c2081ed03498)）。同名组以底座为准（序号 1）。合并结果与 v27 相同。甘霖的「局部广告-公告弹窗」（序号 2，写了 `enable: false`）未改
+
+GK-Lemon-D v59 被守卫丢掉：
+
+- 系统设置（`com.android.settings`）「功能类-快速开启无障碍」（5 条）相对 v56 只改了选择器，没有进入合并结果。选中「无障碍功能启动手势」、以及选中后返回这两条，CheckBox 和标题的相邻关系由 `+` 改为 `-`。开启服务、关掉快捷方式这两条，去掉 `Switch[desc^="使用“"] >2` 这段前缀，开关改为直接匹配 `Switch[id="android:id/switch_widget"]`。返回那条仍是 `action: back`。规则序号也重排了（返回由 3 改为 2，开启服务由 4 改为 3，关掉快捷方式由 2 改为 4）。组名仍是功能类，不含「关闭」或「弹窗」，组上仍写了 `enable: false`，活动页仍是 `.SubSettings`，仍然没有快照。守卫先按功能类丢掉整组，返回那条没有单独计成手势。这个应用在合并结果里仍是 v27 的 6 个组，没有「功能类-快速开启无障碍」
+
+误触守卫挡住的组（合计 2155 组，与 v27 持平）：AIsouler 自用续订 150 组（重复选择器 75、功能类无「关闭/弹窗」28、名称命中拒绝词 29、滑动/返回 16、打开权限 2）、Ling 38 组（滑动/返回 21、名称命中拒绝词 10、功能类无「关闭/弹窗」7）、GK-Lemon-D 11 组（名称命中拒绝词 6、功能类无「关闭/弹窗」2、选择器命中补充拒绝词 2、重复选择器 1）、火山虾 1568 组（重复选择器 1322、功能类无「关闭/弹窗」127、过宽开屏 9、名称命中拒绝词 45、过宽图片 3、打开权限 25、滑动/返回 37）、YaChengMu 388 组（重复选择器 234、功能类无「关闭/弹窗」115、名称命中拒绝词 20、滑动/返回 13、打开权限 4、过宽开屏 1、过宽图片 1）。五个守卫源里只有 GK-Lemon-D 升了版本；系统设置那组仍算在功能类里，丢掉的组数和原因都与 v27 相同。
+
+净变化：应用 +1，规则组 +2，规则 +2。全局组仍为 16。文件大了 965 字节。
+
 ## [27] - 2026-11-22
 
 ### 内容
