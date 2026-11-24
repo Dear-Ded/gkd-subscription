@@ -2,6 +2,38 @@
 
 本订阅的显著变更记录在此。版本号与订阅文件 `dist/gkd.json5` 内的 `version` 字段一致：由每日自动合并任务在内容发生变化时递增，无变化不升版。
 
+## [29] - 2026-11-24
+
+### 内容
+
+对照 v28（1117 应用 / 5119 规则组 / 7955 规则 / 16 全局组，2,878,068 字节），本版为 1117 应用 / 5119 规则组 / 7955 规则 / 16 全局组，订阅文件约 2.8 MB（2,878,330 字节）。例行合并，上游按各源已发布的 dist 拉取。未改自有层。局部广告、全屏广告、分段广告、功能类、通知提示、权限提示、评价提示默认仍是关闭的。开屏广告默认仍是开启的。本版没有新增默认开启的组。合并结果里只有微信的两个组有变化，应用数、规则组数、规则条数都没变。
+
+版本有变化的来源：
+
+- [少年阿鲲](https://github.com/Lin-arm/gkd-Rules) v129 → v130（chore: 🐔v130，2026-11-23T10:50:20Z）。对照 v129 dist 与 v130 dist，规则只动了微信的两组，都进入合并结果。v129 之后、已打进 v130 dist 的提交：fix 微信「🧩小程序-看完30s广告-x掉」（2026-11-23T05:08:12Z）、fix 微信「分段广告-视频号评论区内广告」（2026-11-23T07:20:03Z）。这两组只在少年阿鲲里有，更高层没有同名组，合并结果与该源 dist 一致（只是序号按合并重排，源里分别是 3 和 45，订阅里仍是 93 和 99）。
+
+其余十四个来源的版本与 v28 相同：AIsouler v406、奥怪 v89、甘霖 v72、梦念逍遥 v79、Mrlc v75、Adpro v90、九千院 v9、言木七 v54、AIsouler 自用续订 v124、Ling v16、GK-Lemon-D v59、火山虾 v78、YaChengMu v155、[Lin-arm](https://github.com/Lin-arm/GKD_subscription) v642。本次拉取的 Lin-arm dist 与 2026-11-22T23:42:08Z 的 `chore: v642` 产物逐字节相同。v642 之后的四个提交（fix 红果免费短剧「权限提示-通知权限」、feat JavDB「更新提示」、feat Luna「功能类-自动确认下载」、feat 豆包「全屏广告」）还没有打进已发布 dist，没有进入合并结果。
+
+少年阿鲲 v130 实际并入：
+
+- 微信（`com.tencent.mm`）「分段广告-视频号评论区内广告」（仍为 8 条，序号仍是 99）。说明仍是「⚠️有概率误触」。组上 `fastQuery`，活动页仍是 `.plugin.finder.ui.FinderShareFeedRelUI` 和 `.plugin.finder.ui.FinderHomeAffinityUI`。组没有 `enable: false`，分段广告默认关闭，不会自动点击，key 101 的返回键也不会自动按。八条都还在，改的是名称、点击目标约束和触发顺序。后面从 `-n ImageView[desc="头像"]` 开始的链路没变：A 系列（key 1、25、50）的祖先仍是 `FrameLayout[index<parent.childCount.minus(1)]`，B 系列（key 2、26、51）的祖先仍是 `FrameLayout[index=parent.childCount.minus(1)]`，评论标题仍是 `TextView[text^="评论"][left<200]`。
+  - key 1「①点击[广告](上面的)」改名为「①点击[广告]A」。点击目标去掉 `index=parent.childCount.minus(2)`，`top>getPrev(4).bottom` 放宽为 `top>getPrev(4).bottom.minus(30)`，并加上 `right>getPrev(4).right.minus(100)`。快照仍有 [24834498](https://i.gkd.li/i/24834498)、[24834499](https://i.gkd.li/i/24834499)，新增 [35262190](https://i.gkd.li/i/35262190)、[35263402](https://i.gkd.li/i/35263402)。排除快照仍有 [24835207](https://i.gkd.li/i/24835207)，新增 [35262964](https://i.gkd.li/i/35262964)
+  - key 2「①点击[广告](下面的)」改名为「①点击[广告]B」。同样去掉 `index=parent.childCount.minus(2)`，并加上 `right>getPrev(4).right.minus(100)`，没有 top 限制。原先唯一的快照 [24834498](https://i.gkd.li/i/24834498) 从这条拿掉，仍挂在 key 1 上。这条现在不带快照
+  - key 25「②点击下方的[关闭该广告]的坐标」改名为「②坐标点击[关闭该广告]A」。选择器与 key 1 相同。`preKeys` 从 `[1, 2]` 改为 `[1]`，只跟在 A 之后。坐标未改：`left: width * -0.7469`，`top: width * 2.4259`。快照仍有 [24834568](https://i.gkd.li/i/24834568)，新增 [35262192](https://i.gkd.li/i/35262192)
+  - key 26「②点击上方的[关闭该广告]的坐标」改名为「②坐标点击[关闭该广告]B」。选择器与 key 2 相同。`preKeys` 从 `[1, 2]` 改为 `[2]`。坐标未改：`left: width * -0.7469`，`top: width * -1.2901`。快照仍是 [25476021](https://i.gkd.li/i/25476021)、[24835410](https://i.gkd.li/i/24835410)
+  - key 50「③点击下方[直接关闭]的坐标」改名为「③坐标点击[直接关闭]A」。选择器与 key 1 相同。`preKeys` 从 `[25, 26]` 改为 `[25]`。坐标未改：`left: width * 0.1296`，`top: width * 1.1728`。快照仍有 [24834571](https://i.gkd.li/i/24834571)，新增 [35262195](https://i.gkd.li/i/35262195)
+  - key 51「③点击上方的[直接关闭]的坐标」改名为「③坐标点击[直接关闭]B」。选择器与 key 2 相同。`preKeys` 从 `[25, 26]` 改为 `[26]`。坐标未改：`left: width * 0.1296`，`top: width * -2.5247`。快照仍是 [25476022](https://i.gkd.li/i/25476022)
+  - key 100「④误触-返回评论区」、key 101「④误触输入框-返回键」选择器、活动页和动作都没变。`preKeys` 从 `[1, 2, 25, 26, 50, 51]` 改为 `[25, 26, 50, 51]`：点过广告本身不再接着跑这两条，只有坐标点过关闭菜单之后才跑。key 100 仍是三条 `anyMatches`（返回按钮、半屏页返回、`desc="返回"`），活动页仍是 `.plugin.webview.ui.tools.MMWebViewUI`、`.plugin.sns.ad.landingpage.ui.activity.HalfScreenVangoghPageUI`、`.ui.halfscreen.HalfScreenTransparentActivity`，快照仍是 [24836217](https://i.gkd.li/i/24836217)、[24834641](https://i.gkd.li/i/24834641)、[24836811](https://i.gkd.li/i/24836811)、[25476791](https://i.gkd.li/i/25476791)、[25477084](https://i.gkd.li/i/25477084)。key 101 仍是 `action: back`，匹配 `desc="表情"` 旁的评论区，快照仍是 [24835207](https://i.gkd.li/i/24835207)。这组没有示例链接
+- 微信「🧩小程序-看完30s广告-x掉」（仍为 5 条，序号仍是 93）。说明由「①已完成 ②已获得」改为「(⚠️偶尔失效,gkd捉不到广告节点) ①已完成 ②已获得」。组上 `fastQuery`、`forcedTime: 60000` 未改。组没有 `enable: false`，名称也不落到默认关闭的分类，改过的两条仍会自动执行。第 1 条「①已完成-x掉」、第 2 条「②已获得奖励-x掉」、第 4 条「④直播-已获得奖励-x掉」未改
+  - 第 3 条「③已获得奖励-关闭」：点「关闭」的路径由 `<<3` 改为先上一层可见节点、再两层（`@[text="关闭"] < [visibleToUser=true] <2 [index=parent.childCount.minus(1)] - FrameLayout >3 [text="已获得奖励"]`）。最后一层仍是父节点的最后一个子节点，旁边仍是「已获得奖励」。活动页在 `.plugin.appbrand.ui.AppBrandUI`、`.plugin.appbrand.ui.AppBrandPluginUI` 之外加上 `.plugin.appbrand.ipc.AppBrandProcessProxyUI`。快照仍有 [24545151](https://i.gkd.li/i/24545151)、[30338756](https://i.gkd.li/i/30338756)、[30339852](https://i.gkd.li/i/30339852)，新增 [35255348](https://i.gkd.li/i/35255348)。示例仍是 [1ec650be](https://e.gkd.li/1ec650be-9fa6-413f-88a5-f8118e836fa6)。这条会自动点「关闭」
+  - 第 5 条「⑤已获得奖励-按[返回键]」：选择器未改，仍是 `@[text="已获得奖励"] < [childCount=1] + [visibleToUser=true] >2 [text="广告"]`，动作仍是返回（`action: back`，`actionDelay: 500`）。活动页同样加上 `.plugin.appbrand.ipc.AppBrandProcessProxyUI`。新增 `actionCdKey: 3`，与第 3 条共用冷却；组上没有另写 `actionCd`。快照仍是 [30339852](https://i.gkd.li/i/30339852)、[30341286](https://i.gkd.li/i/30341286)、[30388374](https://i.gkd.li/i/30388374)。这条会自动按返回键
+
+微信其余 88 个组的序号和选择器未改，仍是 90 组。
+
+没有新的同名组被挡住，也没有新的组被守卫丢掉。误触守卫挡住的组（合计 2155 组，与 v28 持平）：AIsouler 自用续订 150 组（重复选择器 75、功能类无「关闭/弹窗」28、名称命中拒绝词 29、滑动/返回 16、打开权限 2）、Ling 38 组（滑动/返回 21、名称命中拒绝词 10、功能类无「关闭/弹窗」7）、GK-Lemon-D 11 组（名称命中拒绝词 6、功能类无「关闭/弹窗」2、选择器命中补充拒绝词 2、重复选择器 1）、火山虾 1568 组（重复选择器 1322、功能类无「关闭/弹窗」127、过宽开屏 9、名称命中拒绝词 45、过宽图片 3、打开权限 25、滑动/返回 37）、YaChengMu 388 组（重复选择器 234、功能类无「关闭/弹窗」115、名称命中拒绝词 20、滑动/返回 13、打开权限 4、过宽开屏 1、过宽图片 1）。五个守卫源的版本都没变，丢掉的组与 v28 相同。
+
+净变化：应用数不变，规则组数不变，规则条数不变。全局组仍为 16。文件大了 262 字节。
+
 ## [28] - 2026-11-23
 
 ### 内容
