@@ -6,6 +6,8 @@
 补入并重排 key；globalGroups 同名只保留高层一份。categories 取底座的。
 自有层：同名 group 整体替换；disable 列表可将任意 group 置 enable:false；
 globalGroups 同名替换、新名追加。
+globalExclude：给已有全局组的每条规则追加 excludeMatches，不改点击选择器。
+上游之后若改写这些组，下次合并仍会把排除补回去。
 内容哈希未变化时不升版本（--bump 时内容变化才 version+1）。
 无 state.json 时，从已发布的 dist 回读版本号与内容哈希，避免误把版本打回 1。
 
@@ -380,6 +382,60 @@ def apply_custom(apps, custom, stats):
     return apps
 
 
+def append_exclude(rule, selector):
+    """给一条规则加上 excludeMatches。已有相同选择器则不重复追加。"""
+    if isinstance(rule, str):
+        return {'matches': rule, 'excludeMatches': [selector]}
+    if not isinstance(rule, dict):
+        return rule
+    existing = rule.get('excludeMatches')
+    if existing is None:
+        rule['excludeMatches'] = [selector]
+    elif isinstance(existing, str):
+        if existing != selector:
+            rule['excludeMatches'] = [existing, selector]
+    elif isinstance(existing, list):
+        if selector not in existing:
+            existing.append(selector)
+    else:
+        raise SystemExit(f'unsupported excludeMatches type: {type(existing).__name__}')
+    return rule
+
+
+def apply_global_excludes(global_groups, custom, stats):
+    """给已有全局组追加排除选择器，不替换点击目标。
+
+    custom.globalExclude 条目：
+      groupName 或 groupNames：全局组名，必须已存在
+      excludeMatches：追加到该组每一条规则的 excludeMatches（任一命中即不点击）
+    """
+    specs = custom.get('globalExclude') or []
+    by_name = {g.get('name'): g for g in global_groups}
+    for spec in specs:
+        names = list(spec.get('groupNames') or [])
+        if spec.get('groupName'):
+            names.append(spec['groupName'])
+        selector = (spec.get('excludeMatches') or '').strip()
+        if not names or not selector:
+            raise SystemExit(f'globalExclude entry missing group or selector: {spec!r}')
+        for name in names:
+            group = by_name.get(name)
+            if group is None:
+                raise SystemExit(f'globalExclude group not found: {name}')
+            rules = group.get('rules')
+            if isinstance(rules, (str, dict)):
+                group['rules'] = [append_exclude(rules, selector)]
+                touched = 1
+            elif isinstance(rules, list):
+                group['rules'] = [append_exclude(rule, selector) for rule in rules]
+                touched = len(rules)
+            else:
+                raise SystemExit(f'globalExclude unsupported rules on {name}')
+            stats['global_exclude_groups'] += 1
+            stats['global_exclude_rules'] += touched
+    return global_groups
+
+
 def apply_custom_globals(global_groups, custom, stats):
     names = {g.get('name'): i for i, g in enumerate(global_groups)}
     for group in custom.get('globalGroups') or []:
@@ -511,9 +567,11 @@ def main():
     apps = [merged[aid] for aid in order]
     custom_stats = {'apps_from_custom': 0, 'groups_from_custom': 0,
                     'groups_custom_replaced': 0, 'groups_disabled': 0,
-                    'globals_from_custom': 0, 'globals_custom_replaced': 0}
+                    'globals_from_custom': 0, 'globals_custom_replaced': 0,
+                    'global_exclude_groups': 0, 'global_exclude_rules': 0}
     apps = apply_custom(apps, custom, custom_stats)
     global_groups = apply_custom_globals(global_groups, custom, custom_stats)
+    global_groups = apply_global_excludes(global_groups, custom, custom_stats)
     apps.sort(key=lambda a: a['id'])
 
     payload = {'categories': categories, 'globalGroups': global_groups, 'apps': apps}
