@@ -2,6 +2,53 @@
 
 本订阅的显著变更记录在此。版本号与订阅文件 `dist/gkd.json5` 内的 `version` 字段一致：由每日自动合并任务在内容发生变化时递增，无变化不升版。
 
+## [33] - 2026-11-27
+
+### 内容
+
+对照 v32（1119 应用 / 5124 规则组 / 7963 规则 / 16 全局组，2,888,388 字节），本版为 1120 应用 / 5129 规则组 / 7969 规则 / 16 全局组，订阅文件约 2.8 MB（2,890,834 字节）。例行合并，上游按各源已发布的 dist 拉取。未改自有层。局部广告、全屏广告、分段广告、功能类、通知提示、权限提示、评价提示默认仍是关闭的。开屏广告默认仍是开启的。本版没有新增默认开启的组。
+
+版本有变化的来源：
+
+- [Lin-arm](https://github.com/Lin-arm/GKD_subscription) v644 → v645（chore: 🚀v645，2026-11-26T01:52:47Z，commit c4e146ce）。v32 所用 dist 是 v644，文件 1,396,696 字节。本次拉取的 v645 dist 为 1,398,848 字节，与 c4e146ce 的 `dist/gkd.json5` 逐字节相同，与 v644 逐字节不同。对照两版 dist，只动了五个应用。测测、微博、红果免费短剧进入合并结果；豆瓣、腾讯文档被底座同名组挡住。v644 之后、已打进 v645 dist 的提交：feat 测测「权限提示 / 全屏广告 / 局部广告」（2026-11-25T13:23:47Z，42e16b93，#502）、feat 微博「全屏广告 +2」（2026-11-25T14:11:02Z，135bd919，#501）、fix 腾讯文档「开屏广告」（2026-11-25T14:20:55Z，898ca087，#503）、perf 红果免费短剧「功能类-[上滑]继续看短剧」（2026-11-25T14:42:07Z，85c0d950）、perf 豆瓣「开屏广告」（2026-11-25T15:50:08Z，c12b2adf）。ci 加个图标（2026-11-25T16:54:48Z，e316bb6a）只改了构建工作流的提交说明，把 `chore: v版本号` 换成 `chore: 🚀v版本号`，没有改规则；v645 的提交说明因此带上火箭符号。
+
+其余十三个来源的版本与 v32 相同：AIsouler v406、奥怪 v89、甘霖 v72、梦念逍遥 v79、Mrlc v75、Adpro v90、九千院 v9、少年阿鲲 v131、言木七 v54、AIsouler 自用续订 v124、Ling v16、GK-Lemon-D v59、火山虾 v78、YaChengMu v155。合并结果里只有测测、微博、红果免费短剧这三个应用有变化。
+
+Lin-arm v645 实际并入：
+
+- 测测（`com.xxwolo.cc5`）新增应用，3 组（4 条）。各源里只有 Lin-arm 有这个包名，整份并入，应用名、组名和序号都与上游 dist 一致。三组都没有 `enable: false`。权限提示、全屏广告、局部广告默认关闭，不会自动点击
+  - 「权限提示-通知权限」（2 条，序号 0）。说明是「点击[×掉/取消]」。活动页 `com.cece.app.MainActivity` 写在组上。key 0「底部横幅」：`matchRoot`、`actionCd: 3000` 写在这条规则上。出现 desc 包含「开启系统通知」时，点它下面可点击、desc 为空、宽小于 106 且高小于 107 的节点，这个节点旁边是 desc「去开启」（`[desc*="开启系统通知"] > @[clickable=true][desc=null][width<106][height<107] + [desc="去开启"]`）。快照 [35392398](https://i.gkd.li/i/35392398)，示例 [94819262](https://e.gkd.li/94819262-26e5-458b-ba2b-a633924d6456)。点的是「去开启」旁的小叉。key 1「弹窗」：`matchTime: 10000`、`actionMaximum: 3` 写在这条规则上，不在组上。点可点击的 desc「取消」，旁边是可点击的 desc「打开通知」（`@[desc="取消"][clickable=true] + [desc="打开通知"][clickable=true]`）。快照 [35392498](https://i.gkd.li/i/35392498)，示例 [26d36064](https://e.gkd.li/26d36064-b217-4a49-993a-83a60d86ea0a)。点的是「取消」
+  - 「全屏广告-小组件弹窗」（1 条，序号 1）。说明是「点击[关闭]」。`matchTime: 10000`、`actionMaximum: 1`、`resetMatch: "app"` 写在组上。规则上 `fastQuery`，活动页仍是 `com.cece.app.MainActivity`。点可点击的 desc「关闭」，它的祖先里有以「添加小组件」开头的 View，再往上走到 `android:id/content`（`@[desc="关闭"][clickable=true] <n View[desc^="添加小组件"] < * < * < [id="android:id/content"]`）。快照 [35392522](https://i.gkd.li/i/35392522)，示例 [2d688ba5](https://e.gkd.li/2d688ba5-7c0f-4737-b764-7efc744600e0)
+  - 「局部广告-右下角浮窗」（1 条，序号 2）。说明是「点击×掉」。组上 `matchRoot`、`forcedTime: 10000`、`actionCd: 3000`。活动页 `com.cece.app.MainActivity`。点没有子节点、可点击、宽高都小于 80 且可见的 ImageView，它的父节点有 2 个子节点、可点击、宽高都小于 350 且可见。快照 [35392429](https://i.gkd.li/i/35392429)。没有示例链接
+- 微博（`com.sina.weibo`）新增两组，都没有 `enable: false`，全屏广告默认关闭，不会自动点击。这两组更高层没有同名组，合并结果与 Lin-arm v645 一致，序号也与上游 key 相同。原先序号 28–54 的 27 组改为 30–56，选择器未改。序号 8、9、14、17–20、22–27 的十三组未改。微博现为 42 组
+  - 「全屏广告-小组件弹窗」（1 条，序号 28）。说明是「点击[暂不添加]跳过组件引导」。规则上 `fastQuery`，活动页 `.extlibui.appwidget.business.install.WidgetInstallDialogActivity`。两条 `matches` 都要出现：可见且包含「小组件」的文字，以及可点击的 `vid="tv_refuse"`。没有写 `@`，GKD 点最后一条，也就是 `vid="tv_refuse"`。快照 [35392812](https://i.gkd.li/i/35392812)，示例 [41feacfb](https://e.gkd.li/41feacfb-053c-410f-880f-ac8b8d31d607)
+  - 「全屏广告-发现页弹窗」（1 条，序号 29）。说明是「点击×关闭发现页的发布会/直播推广弹窗」。`matchRoot`、`actionMaximum: 1`、`resetMatch: "match"` 写在规则上。活动页 `.MainTabActivity`。点没有子节点的可点击节点，这条路径的另一头是 desc「广告」（`@[clickable=true][childCount=0] <1 [childCount=2] <2 * <1 * >2 [desc="广告"]`）。快照 [35392878](https://i.gkd.li/i/35392878)，示例 [6156ade7](https://e.gkd.li/6156ade7-09c6-48f6-897e-4e701f648b2e)
+- 红果免费短剧（`com.phoenix.read`）「功能类-[上滑]继续看短剧」（仍为 2 条，序号仍是 1）只改了说明。由「①读秒结束后[上滑] ②未显示[选集]时,每5秒[上滑]1次」改为「出现 广告/直播间 时上滑跳过, ①读秒结束后[上滑] ②未显示[选集]时,每5秒[上滑]1次」。选择器、活动页、快照、排除快照、示例和上滑参数都没变。这组 v32 已由 Lin-arm 进入，更高层没有同名组，所以说明写进了合并结果，合并结果与 Lin-arm v645 这组一致。组没有 `enable: false`，功能类默认关闭，不会自动上滑。其余三组的序号和选择器未改：Lin-arm 的「权限提示-通知权限」（序号 2），甘霖的「局部广告-阅读-底部卡片广告」（序号 3，写了 `enable: false`）和「全屏广告-阅读-视频广告」（序号 4，写了 `enable: false`）
+
+被更高层同名组挡住、未进入合并结果：
+
+- 豆瓣（`com.douban.frodo`）「开屏广告」：Lin-arm 仍是 9 条（key 0–4、10–13）。组上的说明、`fastQuery`、`matchRoot`、`matchTime: 10000`、`actionMaximum: 2`、`resetMatch: "app"`、`priorityTime: 10000`、`order: -10` 都没变。key 0–3 未改。key 4 加上 `actionCdKey: 3`，选择器未改，仍是点宽高小于 170 的 View，祖先里有 `vid="sdk_view"`。坐标四条（key 10–13）由两条 `anyMatches` 改成一条 `matches`：`[vid="ad_view" || vid="sdk_view"][visibleToUser=true][width>=720][childCount!=0]`。旧的第二条是 `vid="sdk_view"` 里面的 `vid="animation_view"`，这次改成 `ad_view` 或 `sdk_view` 自身可见、宽至少 720 且有子节点。坐标没变。key 10 也加上 `actionCdKey: 3`。key 12「点击坐标③」补快照 [35417943](https://i.gkd.li/i/35417943)。AIsouler 底座有同名组（序号 -1，6 条，key 0–5）：`matchTime: 10000`、`resetMatch: "app"`、`actionMaximumKey: 0`、`priorityTime: 10000`、`order: -10`，没有这次的 `actionCdKey`，也没有快照 35417943。同名组以底座为准，合并结果与 v32 相同。开屏分类默认开启，但这组本来就在，点的仍是底座那 6 条
+- 腾讯文档（`com.tencent.docs`）「开屏广告」：Lin-arm 把相邻关系由 `-` 放宽为 `-(1,2)`，文字由以「互动广告」开头放宽为以「互动广告」开头或全文就是「广告」（`@LinearLayout[clickable=true] -(1,2) [text^="互动广告" || text="广告"][visibleToUser=true]`），并补快照 [35394224](https://i.gkd.li/i/35394224)。组上 `fastQuery`、`matchTime: 10000`、`actionMaximum: 1`、`resetMatch: "app"`、`priorityTime: 10000`、`order: -10` 未改。AIsouler 底座有同名组（序号 0），与 Lin-arm v644 这组相同：选择器仍是 `@LinearLayout[clickable=true] - [text^="互动广告"][visibleToUser=true]`，快照仍是 [13198082](https://i.gkd.li/i/13198082)、[23557410](https://i.gkd.li/i/23557410)。同名组以底座为准，合并结果与 v32 相同。开屏分类默认开启，但这组本来就在，点的仍是旧选择器
+
+没有新的组被守卫丢掉。误触守卫挡住的组（合计 2155 组，与 v32 持平）：AIsouler 自用续订 150 组（重复选择器 75、功能类无「关闭/弹窗」28、名称命中拒绝词 29、滑动/返回 16、打开权限 2）、Ling 38 组（滑动/返回 21、名称命中拒绝词 10、功能类无「关闭/弹窗」7）、GK-Lemon-D 11 组（名称命中拒绝词 6、功能类无「关闭/弹窗」2、选择器命中补充拒绝词 2、重复选择器 1）、火山虾 1568 组（重复选择器 1322、功能类无「关闭/弹窗」127、过宽开屏 9、名称命中拒绝词 45、过宽图片 3、打开权限 25、滑动/返回 37）、YaChengMu 388 组（重复选择器 234、功能类无「关闭/弹窗」115、名称命中拒绝词 20、滑动/返回 13、打开权限 4、过宽开屏 1、过宽图片 1）。五个守卫源的版本都没变，丢掉的组与 v32 相同。
+
+v645 打版之后，Lin-arm 主分支上又有提交。已发布 dist 仍与 c4e146ce 的 `dist/gkd.json5` 逐字节相同，版本号仍是 645。主分支最新提交是 f58a6563（2026-11-26T17:06:52Z），其后没有新的 chore。下面这些都没有进入合并结果：
+
+- fix 小红书（`com.xingin.xhs`）「权限提示-通知权限」适配新样式（2026-11-26T13:07:25Z，d013d8d1，#507）。源码把活动页从两条规则上移到组上，给 key 0、key 1 加上名称「全屏弹窗1」「底部横幅」并补示例，新增 key 2「全屏弹窗2」：出现可见的「打开推送通知」时点可点击的「取消」，快照 [35457404](https://i.gkd.li/i/35457404)，示例 [2cc4ec49](https://e.gkd.li/2cc4ec49-84b8-45fc-922c-2de4317cf26c)。已发布 dist 仍是 2 条，活动页还在规则上，没有名称，没有 key 2，没有这张快照
+- fix 微博「全屏广告-发现页弹窗」另一种样式（2026-11-26T13:52:38Z，b57eace3，#505）。源码把说明改成「点击×关闭发现页的弹窗」，选择器换成宽高小于 114 的可点击节点，并补快照 [35441180](https://i.gkd.li/i/35441180)。同时新增 key 30「其他-关闭关注提示」（推荐关注、铁粉关系两条），快照 [35419581](https://i.gkd.li/i/35419581)，示例 [aeacd3ec](https://e.gkd.li/aeacd3ec-8c8a-44ed-9908-a466c7067046)。已发布 dist 这组仍是 v645 的旧说明和旧选择器，没有 key 30，没有这两张快照。本版并入的发现页弹窗是打版时的那一版
+- fix 荣耀桌面（`com.hihonor.android.launcher`）「功能类-[不]添加小部件到桌面」不触发（2026-11-26T14:16:08Z，0a29c98e），以及随后的 Revert（2026-11-26T14:50:18Z，83fb86a0）。fix 把 `matchTime` 从 5000 改成 12000、`actionMaximum` 从 1 改成 2，选择器改成从标题「添加到主屏幕」走到 `android:id/button2`。Revert 把源码退回 fix 之前。已发布 dist 仍是退回后的那一版：`matchTime: 5000`、`actionMaximum: 1`，两条 `matches` 分别是可见的「添加到主屏幕」和可点击的「取消」，快照仍是 [34847270](https://i.gkd.li/i/34847270)。这次改动没有进入合并结果
+- fix 闲鱼（`com.taobao.idlefish`）「功能类-自动点击[查看原图]」（2026-11-26T14:59:00Z，2f915ded）。源码把活动页挪到组上，并加上 `.photo.DetailPhotoGalleryActivity`。原规则改成 key 1「反射法」，选择器收紧并加上 `actionCdKey: 0`；新增 key 0「直接」，点 `vid="origin_image_btn"`，快照 [35469352](https://i.gkd.li/i/35469352)，示例 [0da230d0](https://e.gkd.li/0da230d0-77ed-45a1-b366-c193ef7f8c3c)。已发布 dist 仍是 1 条，选择器仍是可见的 `desc="查看原图"`，活动页仍只有两个 FlutterBoost 页，没有这张快照
+- perf GitHub（`com.github.android`）「功能类-自动批准授权验证」（2026-11-26T15:58:36Z，f3809110）。源码给组加上 `fastQuery`，去掉 key 0 的 `matchRoot`，两条都加上名称，选择器改成快查写法（批准那条要求可见的「身份验证请求」，输入长度由等于 2 放宽为至少 2）。已发布 dist 仍是旧选择器，key 0 仍有 `matchRoot: true`，组上没有 `fastQuery`，两条都没有名称
+- feat 雪球（`com.xueqiu.android`）一串提交，都还在源码里。已发布 dist 仍是原来的三组：「局部广告-信息流广告」（序号 1，仍只点 `vid="ad_close"`，活动页仍只有首页，快照仍是 [13388227](https://i.gkd.li/i/13388227)）、「局部广告-评论区广告」（序号 2，仍只点 `vid="ad_card_close"`，快照仍是 [13388361](https://i.gkd.li/i/13388361)）、「全屏广告」（序号 3，`matchTime: 10000`、`actionMaximum: 1`、`resetMatch: "app"` 仍在组上，仍点 `vid="image_cancel"`，快照仍是 [22995479](https://i.gkd.li/i/22995479)）。没有序号 4 及以后的新组
+  - feat 局部广告（2026-11-26T16:18:05Z，d4a5220f）。评论区那条加上 `vid="ad_banner_close"`，补快照 [35473004](https://i.gkd.li/i/35473004)。新增 key 4「局部广告」（首页顶部卡片、横幅、AI_Tooltip），快照 [35472886](https://i.gkd.li/i/35472886)、[35473208](https://i.gkd.li/i/35473208)
+  - feat 文章尾部卡片（2026-11-26T16:22:00Z，a8d47603）。给上面这组加 key 3「文章尾部卡片」，快照 [35473510](https://i.gkd.li/i/35473510)
+  - feat 局部广告（2026-11-26T16:47:41Z，71ae09c4）。信息流那条加上股票详情页，补快照 [35474041](https://i.gkd.li/i/35474041)、[35474228](https://i.gkd.li/i/35474228)。横幅改成两条 `anyMatches`，文章尾部补活动页和快照 [35474156](https://i.gkd.li/i/35474156)，并加 key 4「搜索页卡片」，快照 [35473705](https://i.gkd.li/i/35473705)
+  - feat 全屏广告（2026-11-26T16:59:39Z，c1dbf8a1）。原「全屏广告」把次数限制挪到 key 0「首页」，并加 key 1「小雪理财课」，快照 [35474964](https://i.gkd.li/i/35474964)。新增 key 5「全屏广告-开通股票账户」，快照 [35475071](https://i.gkd.li/i/35475071)
+  - feat 功能类-自动点击[查看原图]（2026-11-26T17:04:42Z，ef7513c6）。新增 key 6，点可点击的「查看原图」，快照 [35474051](https://i.gkd.li/i/35474051)
+  - feat 其他-关闭关注Tip（2026-11-26T17:06:52Z，f58a6563）。新增 key 7，点关注条上的关闭，快照 [35475314](https://i.gkd.li/i/35475314)
+
+净变化：应用 +1，规则组 +5，规则 +6。全局组仍为 16。文件比 v32 大了 2,446 字节。
+
 ## [32] - 2026-11-26
 
 ### 内容
