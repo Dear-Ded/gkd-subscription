@@ -454,6 +454,60 @@ def apply_custom_globals(global_groups, custom, stats):
     return global_groups
 
 
+def stabilize_keys(apps, global_groups, prev_dist):
+    """按上一版已发布 dist 固定组 key：同名组沿用旧 key，新组取未用过的最大 key+1。
+
+    上游在中间插入新组时，其后所有组 key 会顺移；GKD 用组 key 存每组开关，
+    顺移会让订阅者保存的开关落到别的组上（Codex 在 PR #30 审出的 P2）。
+    只对上一版已有的 app/全局组做映射；新 app、新全局组沿用合并时的 key。
+    key 变化的 app 内按 key 重排组顺序（旧组保持原位，新组排到最后）。
+    """
+    if not prev_dist:
+        return apps, global_groups
+    prev_apps = {a['id']: a for a in prev_dist.get('apps', [])}
+    for app in apps:
+        prev = prev_apps.get(app['id'])
+        if prev is None:
+            continue
+        prev_keys = {g.get('name'): g.get('key')
+                     for g in prev.get('groups', [])}
+        if not prev_keys:
+            continue
+        used = {k for k in prev_keys.values() if isinstance(k, int)}
+        nxt = (max(used) + 1) if used else 0
+        changed = False
+        for group in app.get('groups', []):
+            old = prev_keys.get(group.get('name'))
+            if old is None:
+                group['key'] = nxt
+                nxt += 1
+                changed = True
+            elif group.get('key') != old:
+                group['key'] = old
+                changed = True
+        if changed:
+            app['groups'] = sorted(app.get('groups', []),
+                                   key=lambda g: g.get('key'))
+    prev_globals = {g.get('name'): g.get('key')
+                    for g in prev_dist.get('globalGroups', [])}
+    if prev_globals:
+        used = {k for k in prev_globals.values() if isinstance(k, int)}
+        nxt = (max(used) + 1) if used else 0
+        changed = False
+        for group in global_groups:
+            old = prev_globals.get(group.get('name'))
+            if old is None:
+                group['key'] = nxt
+                nxt += 1
+                changed = True
+            elif group.get('key') != old:
+                group['key'] = old
+                changed = True
+        if changed:
+            global_groups = sorted(global_groups, key=lambda g: g.get('key'))
+    return apps, global_groups
+
+
 def count_rules(apps):
     n_groups = 0
     n_rules = 0
@@ -532,6 +586,15 @@ def main():
     state_path = ROOT / 'state.json'
     state = bootstrap_state(state_path, dist)
 
+    # 上一版已发布 dist：用来固定组 key（见 stabilize_keys）。读不到就跳过该步。
+    prev_dist = None
+    prev_file = dist / 'gkd.json5'
+    if prev_file.exists():
+        try:
+            prev_dist = load_json5(prev_file)
+        except Exception:
+            prev_dist = None
+
     per_source = {}
     merged = {}
     order = []
@@ -572,6 +635,7 @@ def main():
     apps = apply_custom(apps, custom, custom_stats)
     global_groups = apply_custom_globals(global_groups, custom, custom_stats)
     global_groups = apply_global_excludes(global_groups, custom, custom_stats)
+    apps, global_groups = stabilize_keys(apps, global_groups, prev_dist)
     apps.sort(key=lambda a: a['id'])
 
     payload = {'categories': categories, 'globalGroups': global_groups, 'apps': apps}

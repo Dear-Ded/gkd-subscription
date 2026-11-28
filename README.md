@@ -49,7 +49,7 @@ https://raw.githubusercontent.com/Dear-Ded/gkd-subscription/main/dist/gkd.json5
 
 ## 数据指标
 
-| 指标 | 当前数据（v34） |
+| 指标 | 当前数据（v35） |
 | --- | --- |
 | 覆盖应用 | 1120 个 |
 | 规则组 | 5136 个 |
