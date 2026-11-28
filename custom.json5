@@ -112,6 +112,111 @@
         },
       ],
     },
+    {
+      id: 'com.github.android',
+      name: 'GitHub',
+      groups: [
+        {
+          key: 1,
+          name: '功能类-自动批准授权验证',
+          desc: '自有覆写。Lin-arm v647 的 perf 改写去掉了 matchRoot；2FA 输码时事件节点是 EditText，默认匹配从事件节点向下找子孙，到不了根部的 android:id/content，批准按钮会 miss（Codex 在 PR #30 的审阅意见）。本层只补回 matchRoot:true，其余与上游 v647 一致。原说明：输入2位数字后-> 批准-> 关闭。',
+          activityIds: '.twofactor.TwoFactorActivity',
+          fastQuery: true,
+          rules: [
+            {
+              key: 0,
+              name: '①点击[批准]',
+              matchRoot: true,
+              matches:
+                '@View[clickable=true][getChild(0).text="批准"] -2 EditText[text.length>=2] -2 [text="身份验证请求"] < View <<5 [id="android:id/content"]',
+              snapshotUrls: 'https://i.gkd.li/i/28906388',
+              exampleUrls:
+                'https://e.gkd.li/86a9d677-6f59-4a3a-81d0-8bb0d6847ca9',
+            },
+            {
+              preKeys: [0],
+              name: '②点击[关闭]',
+              matches:
+                '@View[clickable=true][getChild(0).text="关闭" && visibleToUser=true] -(1,2) [text="登录已批准" || text="无法批准" || text="未找到登录请求"] < * <<5 [id="android:id/content"]',
+              snapshotUrls: [
+                'https://i.gkd.li/i/25366553',
+                'https://i.gkd.li/i/25366549',
+                'https://i.gkd.li/i/32758660',
+              ],
+              exampleUrls: [
+                'https://e.gkd.li/e18eed95-993a-4148-b486-27e64e709188',
+                'https://e.gkd.li/c165be1d-f0d4-47d0-8a39-3aac562885b1',
+                'https://e.gkd.li/4bb620ca-a35a-40c1-ad80-8c777bf86d02',
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'com.dragon.read',
+      name: '番茄免费小说',
+      groups: [
+        {
+          key: 23,
+          name: '功能类-自动[展开更多]评论',
+          desc: '自有覆写。去掉上游新增的通用 [text="展开"] 匹配——它不限定评论区，在小说阅读页与短剧页会把简介的「展开」也点开，与同批新增的「功能类-自动[展开]简介」冲突（Codex 在 PR #30 的审阅意见）；其余与上游 Lin-arm v647 一致，待上游给出带评论区限定的选择器后再跟进。原说明：小说段评区/评分区；短剧评论区/剧评区，点击[展开更多/展开n条回复]。',
+          fastQuery: true,
+          actionCd: 500,
+          rules: [
+            {
+              key: 1,
+              name: '①[展开]点评',
+              activityIds: [
+                'com.dragon.community.impl.comment.playlet.list.page.CSSPlayletCommentListActivity',
+                'com.dragon.community.impl.list.page.CSSBookCommentListActivity',
+              ],
+              matches:
+                '[text$="后点评"] < LinearLayout -2 ViewGroup > [text="展开"][clickable=true]',
+              snapshotUrls: [
+                'https://i.gkd.li/i/35494357',
+                'https://i.gkd.li/i/35494382',
+              ],
+              exampleUrls: [
+                'https://e.gkd.li/5ffee787-dca6-4e91-b908-96bf8f896e47',
+                'https://e.gkd.li/f81b3c2e-5b56-4dab-8eac-ba38396ab972',
+              ],
+            },
+            {
+              key: 2,
+              name: '②[展开]评论/回复',
+              activityIds: [
+                '.reader.ui.ReaderActivity',
+                '.pages.main.MainFragmentActivity',
+                '.ad.openingscreenad.OpeningScreenADActivity',
+                '.component.shortvideo.impl.ShortSeriesActivity',
+              ],
+              matches: [
+                '[id="android:id/content"][height>prev.height.plus(100)] >n [id="android:id/content"][height>500]',
+                '@[clickable=true] > [visibleToUser=true][text^="展开"][text$="回复" || text$="更多"]',
+              ],
+              snapshotUrls: [
+                'https://i.gkd.li/i/35147917',
+                'https://i.gkd.li/i/35147919',
+                'https://i.gkd.li/i/35173217',
+                'https://i.gkd.li/i/35494237',
+                'https://i.gkd.li/i/35203330',
+                'https://i.gkd.li/i/35203316',
+              ],
+              excludeSnapshotUrls: [
+                'https://i.gkd.li/i/35165101',
+                'https://i.gkd.li/i/35173220',
+              ],
+              exampleUrls: [
+                'https://e.gkd.li/e0c12712-4b1e-4b75-a9ec-d1a8042156f6',
+                'https://e.gkd.li/0d2d257a-abda-4255-b971-faf06b565cb7',
+                'https://e.gkd.li/4fc71629-5b01-4c60-a356-0b89c3b7e162',
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ],
   disable: [],
   // 不改点击选择器。合并时追加到这些全局组的每一条规则上：画面上有指纹/面容验证时整条不点。
